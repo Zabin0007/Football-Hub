@@ -1,11 +1,13 @@
 "use client"
 
+import MatchChat from "@/src/components/Chat/MatchChat"
 import Events from "@/src/components/MatchPage/Events"
 import Lineup from "@/src/components/MatchPage/MatchLineup/Lineup"
 import Scoreboard from "@/src/components/MatchPage/ScoreBoard"
 import Stats from "@/src/components/MatchPage/Stats"
 import Tabs from "@/src/components/MatchPage/Tabs"
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import { useState } from "react"
 import { FaArrowLeftLong } from "react-icons/fa6";
 export default function MatchPage() {
@@ -44,6 +46,7 @@ return (
 {activeTab === "stats" && <Stats />}
 {activeTab === "events" && <Events/>}
 {activeTab === "lineups" && <Lineup/>}
+{activeTab === "chat" && <MatchChat/>}
 </div>
 </div>
 </div>

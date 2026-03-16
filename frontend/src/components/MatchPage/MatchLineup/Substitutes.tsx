@@ -10,7 +10,7 @@ export default function Substitutes({ title, players }: any) {
                     <div key={player.number} className="bg-gray-800 rounded-lg p-3">
 
                         <div className="font-semibold text-white">
-                            {player.number}{player.name} 
+                            {player.number}<span className="ms-5">{player.name} </span> 
                         </div>
                         <div className="text-sm text-gray-400">
                             {player.pos}

@@ -15,8 +15,7 @@ export default function Pitch({ players, formation }: any) {
             className="relative w-full h-125 bg-center bg-cover rounded-xl p-6 flex flex-col justify-between"
             style={{ backgroundImage: "url('/images/football_pitch.webp')" }}
         >
-
-
+            {/* formation defining structure */}
             {rows.slice().reverse().map((count: number, i: Key | null | undefined) => {
                 const rowPlayers = fieldPlayers.slice(index, index + count)
                 index += count
