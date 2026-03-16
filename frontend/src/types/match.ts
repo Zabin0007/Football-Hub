@@ -3,8 +3,8 @@ export type Match = {
   teamA: string
   teamB: string
   status: "live" | "finished" | "upcoming"
-  scoreA: string
-  scoreB: string
-  minute: string
-  time: string
+  scoreA: number
+  scoreB: number
+  minute?: number
+  time?: string
 }

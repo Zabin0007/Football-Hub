@@ -1,46 +1,64 @@
 "use client"
 
-import MatchCard from "@/src/components/MatchCard";
+import LeagueSection from "@/src/components/LeagueSection";
 import MatchFilterTabs from "@/src/components/MatchFilterTabs";
-import { Match } from "@/src/types/match";
+import { League } from "@/src/types/league";
 import { useState } from "react";
-
 export default function Home() {
-  const matches : Match[] = [
-     {
-    id: 1,
-    teamA: "RMA",
-    teamB: "CHE",
-    time: "20:30",
-    status: "live",
-    minute: "69",
-    scoreA: "1",
-    scoreB: "0"
-  },
-  {
-    id: 2,
-    teamA: "MCI",
-    teamB: "ARS",
-    time: "22:30",
-    status: "upcoming",
-    minute: "0",
-    scoreA: "0",
-    scoreB: "0"
-  },
-  {
-    id: 3,
-    teamA: "FCB",
-    teamB: "PSG",
-    time: "FT",
-    status: "finished",
-    minute: "90",
-    scoreA: "1",
-    scoreB: "0"
-  }
-  ];
+  const leagues: League[] = [
+{
+id:1,
+name:"Premier League",
+country:"England",
+matches:[
+{
+id:1,
+teamA:"Arsenal",
+teamB:"Chelsea",
+status:"live",
+scoreA:2,
+scoreB:1,
+minute:67
+},
+{
+id:2,
+teamA:"Liverpool",
+teamB:"Man City",
+status:"upcoming",
+scoreA:0,
+scoreB:0,
+time:"22:30"
+}
+]
+},
+{
+id:2,
+name:"La Liga",
+country:"Spain",
+matches:[
+{
+id:3,
+teamA:"Real Madrid",
+teamB:"Barcelona",
+status:"finished",
+scoreA:3,
+scoreB:2
+}
+]
+}
+]
 
-  const [filter,setFilter] = useState('all')
-  const filteredMatches = filter === 'all' ? matches : matches.filter((item) => item.status === filter)
+ const [filter,setFilter] = useState('all')
+ const filteredLeagues = leagues
+  .map(league => ({
+    ...league,
+        matches:
+            filter === "all"
+                  ? league.matches
+                        : league.matches.filter(match => match.status === filter)
+}))
+  .filter((league)=>league.matches.length > 0) //return remove leagues with zero matches
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="md:mx-45 py-25 mx-5">
@@ -57,16 +75,13 @@ export default function Home() {
         <MatchFilterTabs filter = {filter} setFilter={setFilter}/>
         {/* Matches Grid */}
         <div className="flex flex-col gap-3">
-          {filteredMatches.map((item) => (
-            <MatchCard
-              key={item.id}
-              match={item}
-            />
+          {filteredLeagues.map((league)=>(
+          <LeagueSection key={league.id} league={league}/>
           ))}
         </div>
 
         {/* Empty State for when no matches */}
-        {matches.length === 0 && (
+        {leagues.length === 0 && (
           <div className="text-center py-12 sm:py-16">
             <div className="text-6xl sm:text-8xl mb-4">⚽</div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">

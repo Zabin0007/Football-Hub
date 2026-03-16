@@ -23,8 +23,8 @@ export default function MatchFilterTabs({ filter, setFilter }: Props) {
                         className={`py-2.5 rounded-md text-sm md:text-lg font-medium transition-all duration-200 whitespace-nowrap
                         ${
                             filter === tab.key
-                                ? "bg-green-500 text-white shadow-sm"
-                                : "text-gray-400 hover:text-gray-200 hover:bg-gray-700"
+                                ? "bg-green-500 text-black shadow-sm"
+                                : "text-gray-400 hover:text-gray-200 "
                         }`}
                     >
                         {tab.label}

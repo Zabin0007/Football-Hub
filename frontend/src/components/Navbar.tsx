@@ -11,11 +11,11 @@ export default function Navbar() {
         
         {/* Logo Section */}
         <div className="flex items-center gap-2">
-          <div className="w-9 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-            <span className="text-black font-bold text-sm"><HiTrendingUp /></span>
+          <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+            <span className="text-black font-bold text-xl"><HiTrendingUp /></span>
           </div>
           <span className="text-white font-bold text-lg tracking-tighter">
-            Live<span className="text-green-500">Score</span>
+            Now<span className="text-green-500">Score</span>
           </span>
         </div>
 
