@@ -1,6 +1,7 @@
 "use client"
 
 import Events from "@/src/components/MatchPage/Events"
+import Lineup from "@/src/components/MatchPage/MatchLineup/Lineup"
 import Scoreboard from "@/src/components/MatchPage/ScoreBoard"
 import Stats from "@/src/components/MatchPage/Stats"
 import Tabs from "@/src/components/MatchPage/Tabs"
@@ -42,6 +43,7 @@ return (
 <div className="mt-6">
 {activeTab === "stats" && <Stats />}
 {activeTab === "events" && <Events/>}
+{activeTab === "lineups" && <Lineup/>}
 </div>
 </div>
 </div>
