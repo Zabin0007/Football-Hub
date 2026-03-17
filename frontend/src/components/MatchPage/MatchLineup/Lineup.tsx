@@ -42,7 +42,7 @@ export default function MatchLineups() {
         {number:18, name: "Tomiyasu", pos: "DEF" },
         {number:15, name: "Kiwior", pos: "DEF" },
         {number:20, name: "Jorginho", pos: "MID" },
-        {number:1, name: "Vieira", pos: "MID" },
+        {number:78, name: "Vieira", pos: "MID" },
         {number:19, name: "Trossard", pos: "FWD" },
     ]
 

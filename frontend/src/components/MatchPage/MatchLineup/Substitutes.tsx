@@ -7,7 +7,7 @@ export default function Substitutes({ title, players }: any) {
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {players.map((player: any) => (
-                    <div key={player.number} className="bg-gray-800 rounded-lg p-3">
+                    <div key={`${title}-${player.number}`} className="bg-gray-800 rounded-lg p-3">
 
                         <div className="font-semibold text-white">
                             {player.number}<span className="ms-5">{player.name} </span> 

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/src/components/Navbar";
-
-
+import { AuthProvider } from "@/src/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "NowScore",
@@ -19,9 +17,10 @@ export default function RootLayout({
       <body
         className=''
       >
-        <Navbar/>
         <main className="">
+          <AuthProvider>
           {children}
+          </AuthProvider>
         </main>
       </body>
     </html>
