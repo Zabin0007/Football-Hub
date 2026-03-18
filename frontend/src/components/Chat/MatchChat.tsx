@@ -3,24 +3,40 @@
 import { useEffect, useRef, useState } from "react"
 import ChatMessage from "./ChatMessage"
 import ChatInput from "./ChatInput"
+import { socket } from "@/src/utils/socket"
 
-export default function MatchChat() {
+export default function MatchChat({matchId}:{matchId:any}) {
 
-    const [messages, setMessages] = useState([
-        { id: 1, user: "Zabii", text: "What a goal!" },
-        { id: 2, user: "Hazm", text: "Disasterrrrrrrrrrrr" },
-    ])
+    const [messages, setMessages] = useState<any[]>([])
     const bottomRef = useRef<HTMLDivElement | null>(null)
-    const sendMessage = (text: string) => {
 
-        const newMessage = {
-            id: Date.now(),
-            user: "You",
-            text
+    useEffect(()=>{
+        const handleReceiveMessage = (data: any) => { //listen for messages from backend
+            const newMessage = {
+                id: `${Date.now()}-${Math.random()}`, // More unique ID
+                user: data.user,
+                text: data.message
+            }
+            setMessages((prev)=>[...prev,newMessage])
         }
+        
+        socket.connect() //connect backend 
+        socket.emit("joinMatch",matchId) //send room to backend
+        socket.on('recieveMessage', handleReceiveMessage)//listen message
+        
+        return () => {
+            socket.off('recieveMessage', handleReceiveMessage) // Clean up specific listener
+            socket.disconnect()
+        }
+    },[matchId])
 
-        setMessages([...messages, newMessage])
-
+    const sendMessage = (text: string) => {
+        if(!text.trim()) return
+        socket.emit('SendMessage',{ //sendmessage to server
+            matchId,
+            message:text,
+            user:'You'
+        })
     }
 
     useEffect(()=>{

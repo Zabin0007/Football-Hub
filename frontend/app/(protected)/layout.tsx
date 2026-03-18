@@ -3,25 +3,23 @@
 import Navbar from "@/src/components/Navbar"
 import { useAuth } from "@/src/context/AuthContext"
 import { useRouter } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 
 export default function ProtectedLayout({
     children,
 }:{
     children: React.ReactNode
 }){
-    const { isLoggedIn } = useAuth()
+    const { isLoggedIn, isLoading } = useAuth()
     const router = useRouter()
-    const [isLoading, setIsLoading] = useState(true)
     
     useEffect(()=>{
-        if(!isLoggedIn){
+        if(!isLoading && !isLoggedIn){
             router.push('/login')
         }
-        setIsLoading(false)
-    },[isLoggedIn])
+    },[isLoggedIn, isLoading])
 
-    // Show loading spinner while checking authentication
+    // Show loading spinner while AuthContext is checking authentication
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-900 flex items-center justify-center">

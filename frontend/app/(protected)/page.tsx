@@ -6,63 +6,63 @@ import { League } from "@/src/types/league";
 import { useState } from "react";
 export default function Home() {
   const leagues: League[] = [
-{
-id:1,
-name:"Premier League",
-country:"England",
-matches:[
-{
-id:1,
-teamA:"Arsenal",
-teamB:"Chelsea",
-status:"live",
-scoreA:2,
-scoreB:1,
-minute:67
-},
-{
-id:2,
-teamA:"Liverpool",
-teamB:"Man City",
-status:"upcoming",
-scoreA:0,
-scoreB:0,
-time:"22:30"
-}
-]
-},
-{
-id:2,
-name:"La Liga",
-country:"Spain",
-matches:[
-{
-id:3,
-teamA:"Real Madrid",
-teamB:"Barcelona",
-status:"finished",
-scoreA:3,
-scoreB:2
-}
-]
-}
-]
+    {
+      id: 1,
+      name: "Premier League",
+      country: "England",
+      matches: [
+        {
+          id: 1,
+          teamA: "Arsenal",
+          teamB: "Chelsea",
+          status: "live",
+          scoreA: 2,
+          scoreB: 1,
+          minute: 67
+        },
+        {
+          id: 2,
+          teamA: "Liverpool",
+          teamB: "Man City",
+          status: "upcoming",
+          scoreA: 0,
+          scoreB: 0,
+          time: "22:30"
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "La Liga",
+      country: "Spain",
+      matches: [
+        {
+          id: 3,
+          teamA: "Real Madrid",
+          teamB: "Barcelona",
+          status: "finished",
+          scoreA: 3,
+          scoreB: 2
+        }
+      ]
+    }
+  ]
 
- const [filter,setFilter] = useState('all')
- const filteredLeagues = leagues
-  .map(league => ({
-    ...league,
-        matches:
-            filter === "all"
-                  ? league.matches
-                        : league.matches.filter(match => match.status === filter)
-}))
-  .filter((league)=>league.matches.length > 0) //return remove leagues with zero matches
+  const [filter, setFilter] = useState('all')
+  const filteredLeagues = leagues
+    .map(league => ({
+      ...league,
+      matches:
+        filter === "all"
+          ? league.matches
+          : league.matches.filter(match => match.status === filter)
+    }))
+    .filter((league) => league.matches.length > 0) //return remove leagues with zero matches
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="md:mx-45 py-25 mx-5">
-        
+
         {/* Page Header */}
         <div className="mb-6 sm:mb-8 lg:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -72,11 +72,11 @@ scoreB:2
             Don't miss out on today's exciting football matches
           </p>
         </div>
-        <MatchFilterTabs filter = {filter} setFilter={setFilter}/>
+        <MatchFilterTabs filter={filter} setFilter={setFilter} />
         {/* Matches Grid */}
         <div className="flex flex-col gap-3">
-          {filteredLeagues.map((league)=>(
-          <LeagueSection key={league.id} league={league}/>
+          {filteredLeagues.map((league) => (
+            <LeagueSection key={league.id} league={league} />
           ))}
         </div>
 

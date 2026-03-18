@@ -4,13 +4,15 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { useAuth } from "@/src/context/AuthContext"
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
-
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter()
+    const { login, isLoggedIn } = useAuth()
+    
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault()
         const savedUser = localStorage.getItem("user")
@@ -23,7 +25,7 @@ export default function LoginPage() {
             return alert("Please Enter All The required Fields")
         }
         if (email === parsedUser.email && password === parsedUser.password) {
-            localStorage.setItem("isLoggedIn", "true")
+            login(parsedUser) 
             router.push("/")
         } else {
             alert("Invalid credentials")
@@ -31,14 +33,13 @@ export default function LoginPage() {
     }
 
     useEffect(()=>{
-         const savedUser = localStorage.getItem("isLoggedIn")
-         if(savedUser){
+         if(isLoggedIn){
          router.push('/')
          }
-    },[])
+    },[isLoggedIn])
     return (
         <div className="w-full max-w-sm sm:max-w-md bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-lg mx-4 sm:mx-0">
-        <form onClick={handleLogin} >
+        <form onSubmit={handleLogin} >
 
             <h2 className="text-2xl font-bold text-white mb-6 text-center">
                 Welcome Back ⚽
@@ -66,7 +67,7 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-            <button className="w-full mt-6 bg-green-500 hover:bg-green-600 text-black font-semibold py-2 rounded-lg transition">
+            <button type="submit" className="w-full mt-6 bg-green-500 hover:bg-green-600 text-black font-semibold py-2 rounded-lg transition">
                 Login
             </button>
 

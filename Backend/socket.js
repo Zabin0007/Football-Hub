@@ -1,0 +1,33 @@
+const { Server } = require('socket.io')
+
+const initSocket = (server) => {
+    const io = new Server(server,{
+        cors:{
+            origin:'*'
+        }
+    })
+    // io.on => listen for new connection , wait for new client
+    io.on('connection',(socket)=>{     
+        console.log("User Connected" ,socket.id);
+        //Wait for THIS client to send joinMatch event
+        socket.on('joinMatch',(matchId)=>{
+            socket.join(matchId) //Creates or joins room (Add THIS client to a room)
+            console.log(`User joined match ${matchId}`);
+        })
+        //Listen for events FROM ONE client
+        socket.on('SendMessage',({matchId, message, user})=>{ //Wait for THIS client to send message
+            io.to(matchId).emit('recieveMessage',{ //Send message to ALL in that room
+                user,
+                message,
+                time: new Date()
+            })
+        })
+
+        socket.on('disconnected',()=>{
+            console.log("User Disconnected", socket.id);
+            
+        })
+    })
+}
+
+module.exports = initSocket

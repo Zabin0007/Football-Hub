@@ -14,7 +14,7 @@ export default function MatchPage() {
 
 const [activeTab, setActiveTab] = useState("stats")
 
-const match = {
+const match = {    
 teamA: "Arsenal",
 teamB: "Chelsea",
 scoreA: 2,
@@ -22,7 +22,7 @@ scoreB: 1,
 minute: 67,
 league: "Premier League"
 }
-
+const params = useParams()
 return (
 <div className="min-h-screen bg-gray-950 text-white">
 <div className="md:mx-45 py-25 mx-5">
@@ -46,7 +46,7 @@ return (
 {activeTab === "stats" && <Stats />}
 {activeTab === "events" && <Events/>}
 {activeTab === "lineups" && <Lineup/>}
-{activeTab === "chat" && <MatchChat/>}
+{activeTab === "chat" && <MatchChat matchId={params.id}/>}
 </div>
 </div>
 </div>
