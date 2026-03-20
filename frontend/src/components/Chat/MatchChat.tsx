@@ -21,9 +21,12 @@ export default function MatchChat({matchId}:{matchId:any}) {
         }
         
         socket.connect() //connect backend 
-        socket.emit("joinMatch",matchId) //send room to backend
+        socket.emit("joinMatch",matchId) //send room to backend , corresponding-matchid
         socket.on('recieveMessage', handleReceiveMessage)//listen message
-        
+        socket.on('matchUpdate',(event)=>{
+            console.log("Live Update: ", event);
+            
+        })
         return () => {
             socket.off('recieveMessage', handleReceiveMessage) // Clean up specific listener
             socket.disconnect()

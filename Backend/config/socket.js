@@ -1,7 +1,9 @@
 const { Server } = require('socket.io')
+//socket -> communicating from server to browser/client 
+let io;
 
 const initSocket = (server) => {
-    const io = new Server(server,{
+     io = new Server(server,{
         cors:{
             origin:'*'
         }
@@ -29,5 +31,12 @@ const initSocket = (server) => {
         })
     })
 }
+const getIO = ()=>{
+    if(!io){
+        throw new Error("Socket.io is not initailised")
+    }
+    return io
+}
 
 module.exports = initSocket
+module.exports.getIO = getIO 

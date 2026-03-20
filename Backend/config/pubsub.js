@@ -1,7 +1,8 @@
 const { createClient } = require("redis")
-
-const publisher = createClient()
-const subscriber = createClient()
+//pub sub is a feature in redis, one way to implement event driven architecture, communicate between server.
+//syncs data between servers
+const publisher = createClient() //sends an events
+const subscriber = createClient()//listen all events
 
 publisher.on("error",(err)=> console.log("Publisher error:", err))
 subscriber.on("error",(err)=> console.log("Subscriber error:", err))

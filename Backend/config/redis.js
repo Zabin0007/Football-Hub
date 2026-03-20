@@ -1,5 +1,5 @@
 const { createClient } = require("redis");
-
+//redis is cache storage,store user for a limited time,no need to fetch from db.
 const redisClient = createClient({
     url:'redis://127.0.0.1:6379' //tell node redis->local machine address->redis port
 })
@@ -20,4 +20,4 @@ const testRedis = async()=>{
 }
 
 module.exports = { redisClient,connectRedis,testRedis }
- //use in routes and handlers to send data to redis,connect redis woth our app
+ //use in routes and handlers to send data to redis,connect redis with our app
