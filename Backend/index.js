@@ -7,7 +7,8 @@ const http = require('http')
 const initSocket = require('./config/socket')
 const { connectRedis, redisClient, testRedis } = require('./config/redis')
 const { connectPubSub, subscriber, publisher } = require('./config/pubsub')
-const { getIO } = require('./config/socket')  
+const startSubscriber = require('./Services/subscribeHandler')
+const startPolling = require('./Services/liveMatchPoller')
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -17,23 +18,8 @@ const startServer = async () => {
     await connectRedis()
     await testRedis()
     await connectPubSub()
-
-    await subscriber.subscribe('match-events',(message)=>{
-        const event = JSON.parse(message)
-        console.log("Recieved Event:", event);
-        const io = getIO()
-        io.emit('matchUpdate', event)
-    })
-    setTimeout(async()=>{
-        await publisher.publish('match-events',JSON.stringify({
-            type:'goal',
-            player:'messi',
-            minute:72
-        }))
-        console.log("Event published");
-        
-    },3000)
-
+    // startSubscriber()
+    // startPolling()
     const server = http.createServer(app) //to use sockect http server must.
     initSocket(server)
 

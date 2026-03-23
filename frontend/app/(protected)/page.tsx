@@ -2,53 +2,32 @@
 
 import LeagueSection from "@/src/components/LeagueSection";
 import MatchFilterTabs from "@/src/components/MatchFilterTabs";
+import { getTodayMatches } from "@/src/services/matchServices";
 import { League } from "@/src/types/league";
-import { useState } from "react";
+import { transformMatches } from "@/src/utils/transformMatches";
+import { useEffect, useState } from "react";
 export default function Home() {
-  const leagues: League[] = [
-    {
-      id: 1,
-      name: "Premier League",
-      country: "England",
-      matches: [
-        {
-          id: 1,
-          teamA: "Arsenal",
-          teamB: "Chelsea",
-          status: "live",
-          scoreA: 2,
-          scoreB: 1,
-          minute: 67
-        },
-        {
-          id: 2,
-          teamA: "Liverpool",
-          teamB: "Man City",
-          status: "upcoming",
-          scoreA: 0,
-          scoreB: 0,
-          time: "22:30"
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "La Liga",
-      country: "Spain",
-      matches: [
-        {
-          id: 3,
-          teamA: "Real Madrid",
-          teamB: "Barcelona",
-          status: "finished",
-          scoreA: 3,
-          scoreB: 2
-        }
-      ]
-    }
-  ]
 
   const [filter, setFilter] = useState('all')
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [loading, setLoading] = useState(true)
+
+  useEffect(()=>{
+    const fetchMatches = async() => {
+      try {
+          const apiData = await getTodayMatches()
+          const formattedData = transformMatches(apiData)
+          setLeagues(formattedData)
+      } catch (error) {
+          console.log(error);
+      } finally { 
+          setLoading(false)
+      }
+    }
+
+    fetchMatches();
+  },[])
+
   const filteredLeagues = leagues
     .map(league => ({
       ...league,
@@ -58,6 +37,14 @@ export default function Home() {
           : league.matches.filter(match => match.status === filter)
     }))
     .filter((league) => league.matches.length > 0) //return remove leagues with zero matches
+
+    if (loading) {
+   return (
+    <div className="min-h-screen flex items-center justify-center text-white">
+      Loading matches...
+    </div>
+  );
+  } 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -81,7 +68,7 @@ export default function Home() {
         </div>
 
         {/* Empty State for when no matches */}
-        {leagues.length === 0 && (
+        {filteredLeagues.length === 0 && (
           <div className="text-center py-12 sm:py-16">
             <div className="text-6xl sm:text-8xl mb-4">⚽</div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
