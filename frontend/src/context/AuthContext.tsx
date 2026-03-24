@@ -7,15 +7,21 @@ import { User } from "../types/auth"
 const AuthContext = createContext<AuthContextType| null>(null)
 
 export const AuthProvider = ({children}:{children: React.ReactNode})=>{
-     const [user,setUser] = useState<User|null>(null)
-     const [isLoading, setIsLoading] = useState(true) 
-     
+     const [user, setUser] = useState<User|null>(null) // Always start with null for SSR
+     const [isLoading, setIsLoading] = useState(true) // Add loading back for hydration 
      useEffect(()=>{
+        // This runs only on client side after hydration
         const storedUser = localStorage.getItem('user')
         const isLoggedIn = localStorage.getItem('isLoggedIn')
         
         if(storedUser && isLoggedIn === 'true'){
-            setUser(JSON.parse(storedUser))
+            try {
+                setUser(JSON.parse(storedUser))
+            } catch {
+                // Handle invalid JSON
+                localStorage.removeItem('user')
+                localStorage.removeItem('isLoggedIn')
+            }
         }
         setIsLoading(false) // Set loading to false after checking
      },[])
@@ -26,6 +32,7 @@ export const AuthProvider = ({children}:{children: React.ReactNode})=>{
                 setUser(userData)
         }
         const logout = () => {
+                localStorage.removeItem('user')
                 localStorage.removeItem('isLoggedIn')
                 setUser(null)
                 window.location.href = '/login'

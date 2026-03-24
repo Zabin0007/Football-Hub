@@ -18,8 +18,8 @@ const startServer = async () => {
     await connectRedis()
     await testRedis()
     await connectPubSub()
-    // startSubscriber()
-    // startPolling()
+    startSubscriber()
+    startPolling()
     const server = http.createServer(app) //to use sockect http server must.
     initSocket(server)
 

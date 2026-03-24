@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Match } from "../types/match";
 export default function MatchCard({ match }: {match : Match}) {
   return (
-      <Link href={`/match/:${match.id}`}>
+      <Link href={`/match/${match.id}`}>
             <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-5 transition-all duration-200 cursor-pointer">
 
                 {/* Score Row */}

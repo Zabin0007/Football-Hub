@@ -19,16 +19,23 @@ export default function ProtectedLayout({
         }
     },[isLoggedIn, isLoading])
 
-    // Show loading spinner while AuthContext is checking authentication
+    // Show minimal loading during hydration (very brief)
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading...</p>
-                </div>
-            </div>
+            <>
+                <Navbar/>
+                <main>
+                    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+                        <div className="animate-pulse text-gray-400">Loading...</div>
+                    </div>
+                </main>
+            </>
         )
+    }
+
+    // If not logged in, don't render anything (redirect is happening)
+    if (!isLoggedIn) {
+        return null
     }
 
     return (

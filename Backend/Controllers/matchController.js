@@ -22,7 +22,7 @@ exports.getTodayMatches = async (req, res) => {
         }
         const matches = await footballServices.getTodayMatches();
         await redisClient.set(
-            'today_matches', JSON.stringify(matches), { expiration: 1200 }
+            'today_matches', JSON.stringify(matches), 'EX', 1200
         );
         console.log('From API');
         res.status(200).json(matches)

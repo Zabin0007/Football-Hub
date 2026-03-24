@@ -2,6 +2,8 @@
 
 import LeagueSection from "@/src/components/LeagueSection";
 import MatchFilterTabs from "@/src/components/MatchFilterTabs";
+import LeagueSkelton from "@/src/components/Skeltons/LeagueSkelton";
+import TabsSkelton from "@/src/components/Skeltons/TabSkelton";
 import { getTodayMatches } from "@/src/services/matchServices";
 import { League } from "@/src/types/league";
 import { transformMatches } from "@/src/utils/transformMatches";
@@ -15,11 +17,14 @@ export default function Home() {
   useEffect(()=>{
     const fetchMatches = async() => {
       try {
+          console.log("Fetching today's matches...");
           const apiData = await getTodayMatches()
+          console.log("API Response:", apiData);
           const formattedData = transformMatches(apiData)
+          console.log("Transformed Data:", formattedData);
           setLeagues(formattedData)
       } catch (error) {
-          console.log(error);
+          console.log("Error fetching matches:", error);
       } finally { 
           setLoading(false)
       }
@@ -40,8 +45,26 @@ export default function Home() {
 
     if (loading) {
    return (
-    <div className="min-h-screen flex items-center justify-center text-white">
-      Loading matches...
+     <div className="min-h-screen bg-gray-950">
+      <div className="md:mx-45 py-25 mx-5">
+
+        {/* Header Skeleton */}
+        <div className="mb-6">
+          <div className="h-8 w-60 bg-gray-700 rounded mb-2 animate-pulse" />
+          <div className="h-4 w-80 bg-gray-700 rounded animate-pulse" />
+        </div>
+
+        {/* Tabs Skeleton */}
+        <TabsSkelton />
+
+        {/* League Skeletons */}
+        <div className="flex flex-col gap-3">
+          {[1,2,3].map((i) => (
+            <LeagueSkelton key={i} />
+          ))}
+        </div>
+
+      </div>
     </div>
   );
   } 
