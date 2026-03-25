@@ -1,4 +1,6 @@
-export default function Scoreboard({ match }: any) {
+import { Match } from "@/src/types/match";
+
+export default function Scoreboard({ match }: { match:Match }) {
 
     return (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">

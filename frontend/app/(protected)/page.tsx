@@ -2,6 +2,7 @@
 
 import LeagueSection from "@/src/components/LeagueSection";
 import MatchFilterTabs from "@/src/components/MatchFilterTabs";
+import HomePageSkeleton from "@/src/components/Skeltons/HomePageSkeleton";
 import LeagueSkelton from "@/src/components/Skeltons/LeagueSkelton";
 import TabsSkelton from "@/src/components/Skeltons/TabSkelton";
 import { getTodayMatches } from "@/src/services/matchServices";
@@ -13,61 +14,56 @@ export default function Home() {
   const [filter, setFilter] = useState('all')
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true)
-
-  useEffect(()=>{
-    const fetchMatches = async() => {
+  const [search, setSearch] = useState('')
+  useEffect(() => {
+    const fetchMatches = async () => {
       try {
-          console.log("Fetching today's matches...");
-          const apiData = await getTodayMatches()
-          console.log("API Response:", apiData);
-          const formattedData = transformMatches(apiData)
-          console.log("Transformed Data:", formattedData);
-          setLeagues(formattedData)
+        console.log("Fetching today's matches...");
+        const apiData = await getTodayMatches()
+        console.log("API Response:", apiData);
+        const formattedData = transformMatches(apiData)
+        console.log("Transformed Data:", formattedData);
+        setLeagues(formattedData)
       } catch (error) {
-          console.log("Error fetching matches:", error);
-      } finally { 
-          setLoading(false)
+        console.log("Error fetching matches:", error);
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchMatches();
-  },[])
+  }, [])
 
   const filteredLeagues = leagues
-    .map(league => ({
+  .map((league) => {
+    // search matches by team OR league
+    const filteredMatches = league.matches.filter((match) => {
+      const searchLower = search.toLowerCase();
+
+      return (
+        league.name.toLowerCase().includes(searchLower) ||
+        match.teamA.toLowerCase().includes(searchLower) ||
+        match.teamB.toLowerCase().includes(searchLower)
+      );
+    });
+
+    return {
       ...league,
       matches:
         filter === "all"
-          ? league.matches
-          : league.matches.filter(match => match.status === filter)
-    }))
-    .filter((league) => league.matches.length > 0) //return remove leagues with zero matches
+          ? filteredMatches
+          : filteredMatches.filter((m) => m.status === filter),
+    };
+  })
+  .filter((league) => league.matches.length > 0); //return remove leagues with zero matches
 
-    if (loading) {
-   return (
-     <div className="min-h-screen bg-gray-950">
-      <div className="md:mx-45 py-25 mx-5">
-
-        {/* Header Skeleton */}
-        <div className="mb-6">
-          <div className="h-8 w-60 bg-gray-700 rounded mb-2 animate-pulse" />
-          <div className="h-4 w-80 bg-gray-700 rounded animate-pulse" />
-        </div>
-
-        {/* Tabs Skeleton */}
-        <TabsSkelton />
-
-        {/* League Skeletons */}
-        <div className="flex flex-col gap-3">
-          {[1,2,3].map((i) => (
-            <LeagueSkelton key={i} />
-          ))}
-        </div>
-
-      </div>
-    </div>
-  );
-  } 
+  if (loading) {
+    return (
+      <>
+      <HomePageSkeleton/>
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -81,6 +77,15 @@ export default function Home() {
           <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
             Don't miss out on today's exciting football matches
           </p>
+        </div>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search league (e.g. Premier League)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none"
+          />
         </div>
         <MatchFilterTabs filter={filter} setFilter={setFilter} />
         {/* Matches Grid */}

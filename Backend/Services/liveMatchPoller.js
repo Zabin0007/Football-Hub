@@ -1,9 +1,12 @@
 const { publisher } = require('../config/pubsub')
 const footballServices = require('../Services/footballServices')
 
+let currentInterval = null
+let noLiveMatchCount = 0
+
 const startPolling = () => {
     const pollMatches = async () => {
-        try {
+         try {
             const matches = await footballServices.getLiveMatches()
             if(!matches){
                 console.log("No live matches");
@@ -18,11 +21,9 @@ const startPolling = () => {
         }
     }
     
-    // Call immediately when server starts
+    // Start with 15 minute polling
     pollMatches()
-    
-    // Then poll every 30 seconds (for testing)
-    setInterval(pollMatches, 30000)
+    currentInterval = setInterval(pollMatches, 900000) // 15 minutes
 }
 
 module.exports = startPolling

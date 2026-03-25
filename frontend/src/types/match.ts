@@ -7,4 +7,5 @@ export type Match = {
   scoreB: number
   minute?: number
   time?: string
+  league: string
 }

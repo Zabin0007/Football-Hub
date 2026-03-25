@@ -3,5 +3,5 @@ const { getLiveMatches, getTodayMatches, getMatchById } = require('../Controller
 const router = express.Router()
 router.get('/live', getLiveMatches)
 router.get('/today', getTodayMatches)
-router.get('/:id', getMatchById)
+router.get('/match/:id', getMatchById)
 module.exports = router

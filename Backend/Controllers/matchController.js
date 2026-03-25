@@ -35,11 +35,22 @@ exports.getTodayMatches = async (req, res) => {
 exports.getMatchById = async (req, res) => {
     try {
         const { id } = req.params
+        const cached_data = await redisClient.get(`match:${id}`);
+        if (cached_data) {
+            console.log("From Redis");
+            return res.json(JSON.parse(cached_data))
+        }
         const matches = await footballServices.getMatchById(id);
         if (!matches) {
-            return res.status(404).json({ message: "Match not found" });
+            console.log('API Limit or no Data, sending empty response');
+            
+            return res.status(200).json(null);
         }
-        res.json(matches)
+        
+        await redisClient.set(
+            `match:${id}`, JSON.stringify(matches), 'EX', 900
+        )
+        res.status(200).json(matches)
     } catch (error) {
         res.status(500).json(error)
     }
