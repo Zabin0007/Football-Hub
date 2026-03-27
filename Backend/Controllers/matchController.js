@@ -43,7 +43,6 @@ exports.getMatchById = async (req, res) => {
         const matches = await footballServices.getMatchById(id);
         if (!matches) {
             console.log('API Limit or no Data, sending empty response');
-            
             return res.status(200).json(null);
         }
         
@@ -55,4 +54,3 @@ exports.getMatchById = async (req, res) => {
         res.status(500).json(error)
     }
 }
-
