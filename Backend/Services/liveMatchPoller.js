@@ -109,7 +109,7 @@ const startPolling = () => {
       console.log("Polling Error:", error.message)
     }
 
-  }, 600000) // 10 minutes
+  }, 300000) // 5 minutes
 }
 
 module.exports = startPolling

@@ -7,7 +7,7 @@ import Scoreboard from "@/src/components/MatchPage/ScoreBoard"
 import Stats from "@/src/components/MatchPage/Stats"
 import Tabs from "@/src/components/MatchPage/Tabs"
 import MatchPageSkelton from "@/src/components/Skeltons/MatchPageSkelton"
-import { getMatchById } from "@/src/services/matchServices"
+import { getMatchById, getMatchEvents, getMatchLineups, getMatchStats } from "@/src/services/matchServices"
 import { ApiMAtchDetail } from "@/src/types/apiMatchDetail"
 import { Match } from "@/src/types/match"
 import { transformMatch } from "@/src/utils/transformMatch"
@@ -16,6 +16,8 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { FaArrowLeftLong } from "react-icons/fa6"
+import TabContentSkeleton from "@/src/components/Skeltons/TabContentSkelton"
+import LineupSkeleton from "@/src/components/Skeltons/LineupSkelton"
 
 export default function MatchPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -23,11 +25,50 @@ export default function MatchPage() {
   const [match, setMatch] = useState<Match | null>(null)
   const [loading, setLoading] = useState(true)
   const [notification, setNotification] = useState<string | null>(null)
-
+  const [tabData, setTabData] = useState<any>({
+    stats: null,
+    events: null,
+    lineups: null
+  })
+  const [tabLoading, setTabLoading] = useState(false)
   const params = useParams()
   const matchId = params.id as string
 
-  // 🔹 Fetch match
+
+  const loadTabData = async (tab: string) => {
+    try {
+      const isLive = match?.status !== "finished"
+
+      // ✅ If NOT live → use cache
+      if (!isLive && tabData[tab]) {
+        console.log("Using cached (FT match)")
+        return
+      }
+      setTabLoading(true)
+
+      let data: any
+
+      if (tab === "events") {
+        data = await getMatchEvents(matchId)
+      } else if (tab === "stats") {
+        data = await getMatchStats(matchId)
+      } else if (tab === "lineups") {
+        data = await getMatchLineups(matchId)
+      }
+
+      setTabData((prev: any) => ({
+        ...prev,
+        [tab]: data
+      }))
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setTabLoading(false)
+    }
+  }
+
+  //  Fetch match
   useEffect(() => {
     const fetchMatch = async () => {
       try {
@@ -60,6 +101,7 @@ export default function MatchPage() {
     if (matchId) fetchMatch()
   }, [matchId])
 
+  // matchUpdate
   useEffect(() => {
     if (!matchId) return
 
@@ -68,13 +110,13 @@ export default function MatchPage() {
 
     const handleMatchUpdate = (event: any) => {
       console.log("Live update:", event)
-
+      
       setMatch((prev) => {
         if (!prev) return prev
 
         if (event.type === "goal") {
-          audioRef.current?.play().catch(()=>{
-                console.log("AutoPlay Blocked");
+          audioRef.current?.play().catch(() => {
+            console.log("AutoPlay Blocked");
           })
           setNotification(
             `⚽ GOAL! ${prev.teamA} ${event.scoreA} - ${event.scoreB} ${prev.teamB} (${event.minute}')`
@@ -116,7 +158,8 @@ export default function MatchPage() {
     }
 
   }, [matchId])
- 
+
+  //toastify
   useEffect(() => {
     if (!notification) return
     const timer = setTimeout(() => setNotification(null), 3000)
@@ -128,7 +171,7 @@ export default function MatchPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="md:mx-45 py-25 mx-5">
-            <audio ref = {audioRef} src='/public/sound/goal.mp3' preload="auto"/>
+        <audio ref={audioRef} src='/sound/goal.mp3' preload="auto" />
         {/* PopUp Notification */}
         {notification && (
           <div className="fixed top-5 right-5 bg-green-600 px-5 py-3 rounded-lg shadow-lg z-50">
@@ -146,14 +189,20 @@ export default function MatchPage() {
         {match && <Scoreboard match={match} />}
 
         <div className="mt-6">
-          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Tabs activeTab={activeTab} setActiveTab={(tab: any) => {
+            setActiveTab(tab)
+            loadTabData(tab)
+          }} />
         </div>
 
         <div className="mt-6">
-          {activeTab === "stats" && <Stats />}
-          {activeTab === "events" && <Events />}
-          {activeTab === "lineups" && <Lineup />}
-          {activeTab === "chat" && <MatchChat matchId={matchId} />}
+          {tabLoading && activeTab === "stats" && <TabContentSkeleton />}
+          {tabLoading && activeTab === "events" && <TabContentSkeleton />}
+          {tabLoading && activeTab === "lineups" && <LineupSkeleton />}
+
+          {!tabLoading && activeTab === "stats" && <Stats data={tabData.stats} />}
+          {!tabLoading && activeTab === "events" && <Events data={tabData.events} />}
+          {!tabLoading && activeTab === "lineups" && <Lineup data={tabData.lineups} />}
         </div>
 
       </div>

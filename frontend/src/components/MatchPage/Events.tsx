@@ -1,97 +1,49 @@
-export default function MatchEvents() {
+import { normalizeType, eventConfig } from "@/src/utils/eventConfig"
 
-  const events = [
-    { id: 1, minute: 12, type: "goal", player: "Saka", assist: "Ødegaard", team: "home" },
-    { id: 2, minute: 34, type: "yellow", player: "Palmer", team: "away" },
-    { id: 3, minute: 41, type: "goal", player: "Palmer", team: "away" },
-    { id: 4, minute: 55, type: "goal", player: "Havertz", assist: "Saka", team: "home" },
-    { id: 5, minute: 62, type: "sub", player: "Nkunku → Mudryk", team: "away" }
-  ]
+export default function MatchEvents({ data }: any) {
+  if (!data) return null
 
   return (
-
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-
       <h3 className="text-lg font-semibold mb-6">Match Events</h3>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
 
-        {events.map(event => (
+        {data.map((event: any, i: number) => {
 
-          <div key={event.id} className="grid grid-cols-1 md:grid-cols-3 items-center">
+          const key = normalizeType(event)
+          const config = eventConfig[key]
 
-            {/* Home Side */}
+          return (
+            <div
+              key={i}
+              className="flex items-center gap-2 text-sm border-b border-gray-800 pb-3 last:border-none"
+            >
 
-            <div className="hidden md:block text-right pr-6">
+              {/* Minute */}
+              <div className="w-[15%] text-green-400 font-medium">
+                {event.time.elapsed}'
+              </div>
 
-              {event.team === "home" && (
+              {/* Player */}
+              <div className="w-[55%] text-center truncate">
+                {event.player?.name || "Unknown"}
+              </div>
 
-                <div>
-                  <div className="font-medium">{event.player}</div>
+              {/* Event */}
+              <div className="w-[30%] flex justify-end items-center gap-2">
+                <span>{config.icon}</span>
 
-                  {event.assist && (
-                    <div className="text-sm text-gray-400">
-                      Assist: {event.assist}
-                    </div>
-                  )}
-
-                </div>
-
-              )}
-
-            </div>
-
-            {/* middle */}
-
-            <div className="flex justify-center items-center gap-2">
-
-              <span className="text-green-400">{event.minute}'</span>
-
-              <span>
-                {event.type === "goal" && "⚽"}
-                {event.type === "yellow" && "🟨"}
-                {event.type === "red" && "🟥"}
-                {event.type === "sub" && "🔄"}
-              </span>
+                <span className="hidden sm:inline truncate">
+                  {config.label}
+                </span>
+              </div>
 
             </div>
-
-            {/* Away Side */}
-
-            <div className="hidden md:block pl-6">
-
-              {event.team === "away" && (
-
-                <div>
-                  <div className="font-medium">{event.player}</div>
-                </div>
-
-              )}
-
-            </div>
-
-            {/* Mobile layout */}
-
-            <div className="md:hidden text-center mt-2">
-
-              <div className="font-medium">{event.player}</div>
-
-              {event.assist && (
-                <div className="text-sm text-gray-400">
-                  Assist: {event.assist}
-                </div>
-              )}
-
-            </div>
-
-          </div>
-
-        ))}
+          )
+        })}
 
       </div>
-
     </div>
-
   )
-
 }

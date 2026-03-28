@@ -29,11 +29,11 @@ export default function MatchPageSkelton() {
       </div>
     </div>
     <div className="bg-gray-900 border border-gray-800 rounded-xl mb-6 p-6 animate-pulse">
-        <div className="flex bg-gray-800 rounded-xl p-1">
-            <div className=" py-2 rounded-lg"></div>
-            <div className=" py-2 rounded-lg"></div>
-            <div className=" py-2 rounded-lg"></div>
-            <div className=" py-2 rounded-lg"></div>
+        <div className="flex bg-gray-800 rounded-xl p-1 gap-2 animate-pulse">
+            <div className="h-8 w-20 bg-gray-700 rounded-lg"></div>
+            <div className="h-8 w-20 bg-gray-700 rounded-lg"></div>
+            <div className="h-8 w-20 bg-gray-700 rounded-lg"></div>
+            <div className="h-8 w-20 bg-gray-700 rounded-lg"></div>
         </div>
     </div>
      <div className="bg-gray-900 border border-gray-800 rounded-xl  p-6 animate-pulse">
