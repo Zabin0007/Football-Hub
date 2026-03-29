@@ -20,7 +20,6 @@ import { useMatchById } from "@/src/hooks/useMatchById"
 import { useMatchEvents } from "@/src/hooks/useMatchEvents"
 import { useMatchStats } from "@/src/hooks/useMatchStats"
 import { useMatchLineups } from "@/src/hooks/useMatchLineups"
-import { log } from "node:console"
 
 export default function MatchPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -122,14 +121,14 @@ export default function MatchPage() {
   }, [matchId])
 
   //polling fallback
-  useEffect(()=>{
-    if(isSocketConnected) return
+  useEffect(() => {
+    if (isSocketConnected) return
     console.log('Fallback Polling active');
     const interval = setInterval(() => {
-        queryClient.invalidateQueries({queryKey:['match',matchId]})
+      queryClient.invalidateQueries({ queryKey: ['match', matchId] })
     }, 30000);
-    return ()=>clearInterval(interval)
-  },[isSocketConnected, matchId])
+    return () => clearInterval(interval)
+  }, [isSocketConnected, matchId])
 
   // toastify  auto-hide
   useEffect(() => {

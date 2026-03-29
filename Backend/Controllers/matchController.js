@@ -66,28 +66,30 @@ exports.getMatchEvents = async (req, res) => {
     const key = `match:${id}:events`
 
     try {
+         let fixtureData = null
+        const cachedFixture = await redisClient.get(`match:${id}`)
+
+        if (cachedFixture) {
+            fixtureData = JSON.parse(cachedFixture)
+        } else {
+            fixtureData = await footballServices.getMatchById(id)
+        }
+
+        const status = fixtureData.fixture.status.short 
+
         const match = await MATCHDETAIL.findOne({ fixtureId: id })
 
         const dbEvents =
             match && match.status === "FT"
                 ? match.data.events
                 : null
-        const status = fixtureData.fixture.status.short
+
         const events = await getOrFetch({
             key,
             dbData: dbEvents,
             fetchFn: () => footballServices.getMatchEvents(id),
             ttl: getTTL("events", status)
         })
-
-        let fixtureData = null
-        const cachedFixture = await redisClient.get(`match:${id}`)
-
-        if (cachedFixture) {
-            fixtureData = JSON.parse(cachedFixture)
-        } else {
-            fixtureData = await footballServices.getFixture(id)
-        }
 
         if (status === "FT" && !match) {
             const [stats, lineups] = await Promise.all([

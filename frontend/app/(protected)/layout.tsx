@@ -5,7 +5,6 @@ import HomePageSkeleton from "@/src/components/Skeltons/HomePageSkeleton"
 import MatchPageSkelton from "@/src/components/Skeltons/MatchPageSkelton"
 import { useAuth } from "@/src/context/AuthContext"
 import { usePathname, useRouter } from "next/navigation"
-import path from "path"
 import React, { useEffect } from "react"
 
 export default function ProtectedLayout({
