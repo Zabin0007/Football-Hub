@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/src/context/AuthContext";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 export const metadata: Metadata = {
   title: "NowScore",
@@ -12,15 +14,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const [queryClient] = useState(() => new QueryClient)
+
   return (
     <html lang="en">
       <body
         className=''
       >
         <main className="">
-          <AuthProvider>
-          {children}
-          </AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </QueryClientProvider>
         </main>
       </body>
     </html>

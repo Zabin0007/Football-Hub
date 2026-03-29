@@ -25,7 +25,7 @@ const initSocket = (server) => {
             })
         })
 
-        socket.on('disconnected',()=>{
+        socket.on('disconnect',()=>{
             console.log("User Disconnected", socket.id);
             
         })
