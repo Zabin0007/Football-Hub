@@ -13,27 +13,25 @@ export const AuthProvider = ({children}:{children: React.ReactNode})=>{
      useEffect(()=>{
         // This runs only on client side after hydration
         const storedUser = localStorage.getItem('user')
-        const isLoggedIn = localStorage.getItem('isLoggedIn')
+        const token = localStorage.getItem('token')
         
-        if(storedUser && isLoggedIn === 'true'){
+        if(storedUser && token){
             try {
                 setUser(JSON.parse(storedUser))
             } catch {
-                // Handle invalid JSON
-                localStorage.removeItem('user')
-                localStorage.removeItem('isLoggedIn')
+                localStorage.clear()
             }
         }
-        setIsLoading(false) // Set loading to false after checking
+        setIsLoading(false)
      },[])
 
-        const login = (userData : User) => {
+        const login = (userData : User, token : string) => {
+                localStorage.setItem("token", token)
                 localStorage.setItem("user",JSON.stringify(userData))
-                localStorage.setItem("isLoggedIn", "true")
                 setUser(userData)
         }
         const logout = () => {
-                localStorage.removeItem('isLoggedIn')
+                localStorage.removeItem('token')
                 setUser(null)
                 window.location.href = '/login'
         }

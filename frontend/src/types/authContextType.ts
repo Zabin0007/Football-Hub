@@ -4,6 +4,6 @@ export type AuthContextType = {
     user: User | null;
     isLoading: boolean;
     isLoggedIn: boolean
-    login : (user:User) => void
+    login : (userData:User , token:string) => void
     logout: () => void
 }
