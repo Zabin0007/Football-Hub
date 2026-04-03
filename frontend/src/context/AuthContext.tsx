@@ -3,6 +3,7 @@
 import { Children, createContext, useContext, useEffect, useState } from "react"
 import {  AuthContextType } from "../types/authContextType"
 import { User } from "../types/auth"
+import api from "../api/axios"
 
 const AuthContext = createContext<AuthContextType| null>(null)
 
@@ -12,17 +13,26 @@ export const AuthProvider = ({children}:{children: React.ReactNode})=>{
     
      useEffect(()=>{
         // This runs only on client side after hydration
-        const storedUser = localStorage.getItem('user')
-        const token = localStorage.getItem('token')
-        
-        if(storedUser && token){
-            try {
-                setUser(JSON.parse(storedUser))
-            } catch {
-                localStorage.clear()
-            }
-        }
-        setIsLoading(false)
+         const fetchUser = async () => {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const res = await api.get("/auth/me")
+      setUser(res.data)
+    } catch (err) {
+      localStorage.clear()
+      setUser(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  fetchUser()
      },[])
 
         const login = (userData : User, token : string) => {

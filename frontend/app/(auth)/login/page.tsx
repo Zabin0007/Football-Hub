@@ -85,7 +85,7 @@ export default function LoginPage() {
                     <GoogleLogin
                         onSuccess={async (credentialResponse) => {
                             try {
-                                const res = await api.post("/auth/google", {
+                                const res = await api.post("/login/google", {
                                     token: credentialResponse.credential,
                                 })
 

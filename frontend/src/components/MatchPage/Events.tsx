@@ -1,7 +1,7 @@
 import { normalizeType, eventConfig } from "@/src/utils/eventConfig"
 
 export default function MatchEvents({ data }: any) {
-  if (!data) return null
+  if (!data || !Array.isArray(data)) return null
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
@@ -10,9 +10,10 @@ export default function MatchEvents({ data }: any) {
       <div className="space-y-4">
 
         {data.map((event: any, i: number) => {
+          if (!event) return null
 
           const key = normalizeType(event)
-          const config = eventConfig[key]
+          const config = eventConfig[key] || { icon: '⚽', label: 'Event' }
 
           return (
             <div
@@ -22,7 +23,7 @@ export default function MatchEvents({ data }: any) {
 
               {/* Minute */}
               <div className="w-[15%] text-green-400 font-medium">
-                {event.time.elapsed}'
+                {event.time?.elapsed || 0}'
               </div>
 
               {/* Player */}

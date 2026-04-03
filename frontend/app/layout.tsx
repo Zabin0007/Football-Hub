@@ -1,14 +1,11 @@
-import type { Metadata } from "next";
+
+"use client";
+
 import "./globals.css";
 import { AuthProvider } from "@/src/context/AuthContext";
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
-export const metadata: Metadata = {
-  title: "NowScore",
-  description: "Provides Live Score of Football and Cricket",
-};
 
 export default function RootLayout({
   children,
@@ -20,6 +17,10 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <title>NowScore</title>
+        <meta name="description" content="Provides Live Score of Football and Cricket" />
+      </head>
       <body
         className=''
       >

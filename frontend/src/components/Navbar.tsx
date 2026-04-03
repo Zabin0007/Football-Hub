@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { HiTrendingUp } from "react-icons/hi";
 import { useAuth } from '../context/AuthContext';
+import Link from 'next/link';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { logout } = useAuth()
@@ -11,6 +12,7 @@ export default function Navbar() {
       <div className="md:mx-45 md:my-1 flex justify-between items-center">
         
         {/* Logo Section */}
+        <Link href={'/'}>
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
             <span className="text-black font-bold text-xl"><HiTrendingUp /></span>
@@ -19,7 +21,7 @@ export default function Navbar() {
             Now<span className="text-green-500">Score</span>
           </span>
         </div>
-
+      </Link>
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6">
           <button 

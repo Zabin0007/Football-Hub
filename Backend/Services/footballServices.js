@@ -1,5 +1,4 @@
 const API = require("../utils/apiClient");
-const { redisClient } = require("../config/redis");
 
 exports.getTodayMatches = async () => {
     const today = new Date().toISOString().split('T')[0];
@@ -28,6 +27,7 @@ exports.getMatchStats = async (id) => {
         return res.data.response
     } catch (error) {
         console.error('Error fetching match Stats:', error)
+        throw error
     }
 }
 
@@ -36,7 +36,8 @@ exports.getMatchEvents = async (id) => {
         const res = await API.get(`/fixtures/events?fixture=${id}`)
         return res.data.response
     } catch (error) {
-        console.error('Error fetching match Stats:', error)
+        console.error('Error fetching match Events:', error)
+        throw error
     }
 }
 
@@ -45,6 +46,7 @@ exports.getMatchLineups = async (id) => {
         const res = await API.get(`/fixtures/lineups?fixture=${id}`)
         return res.data.response
     } catch (error) {
-        console.error('Error fetching match Stats:', error)
+        console.error('Error fetching match Lineups:', error)
+        throw error
     }
 }

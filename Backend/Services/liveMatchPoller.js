@@ -112,4 +112,4 @@ const startPolling = () => {
   }, 300000) // 5 minutes
 }
 
-module.exports = startPolling
+module.exports = { startPolling, isWithinMatchTime }

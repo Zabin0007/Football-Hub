@@ -3,6 +3,7 @@ const footballServices = require('../Services/footballServices')
 const MATCHDETAIL = require("../Model/match")
 const getOrFetch = require("../utils/fetch")
 const getTTL = require("../utils/getTTL")
+const { isWithinMatchTime } = require("../Services/liveMatchPoller")
 
 exports.getLiveMatches = async (req, res) => {
     try {
@@ -10,26 +11,31 @@ exports.getLiveMatches = async (req, res) => {
         res.status(200).json(matches)
     }
     catch (error) {
-        res.status(500).json(error)
+        console.error("Error in getLiveMatches:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message })
     }
 }
 
 
 exports.getTodayMatches = async (req, res) => {
     try {
-        const cached_data = await redisClient.get('today_matches');
+        const today = new Date().toISOString().split('T')[0]; // Get today's date
+        const cacheKey = `today_matches:${today}`; // Include date in cache key
+        
+        const cached_data = await redisClient.get(cacheKey);
         if (cached_data) {
-            console.log("From Redis");
+            console.log("From Redis for date:", today);
             return res.json(JSON.parse(cached_data))
         }
+        
         const matches = await footballServices.getTodayMatches();
         const isLiveTime = await isWithinMatchTime()
 
         const ttl = isLiveTime ? 600 : 1200 // 5 min or 20 min
         await redisClient.set(
-            'today_matches', JSON.stringify(matches), 'EX', ttl
+            cacheKey, JSON.stringify(matches), 'EX', ttl
         );
-        console.log('From API');
+        console.log('From API for date:', today);
         res.status(200).json(matches)
 
     } catch (error) {
@@ -40,23 +46,39 @@ exports.getTodayMatches = async (req, res) => {
 exports.getMatchById = async (req, res) => {
     try {
         const { id } = req.params
-        const cached_data = await redisClient.get(`match:${id}`);
+        let cached_data = null;
+        
+        try {
+            cached_data = await redisClient.get(`match:${id}`);
+        } catch (redisError) {
+            console.log("Redis not available for getMatchById");
+        }
+        
         if (cached_data) {
             console.log("From Redis");
             return res.json(JSON.parse(cached_data))
         }
+        
         const matches = await footballServices.getMatchById(id);
         if (!matches) {
             console.log('API Limit or no Data, sending empty response');
             return res.status(200).json(null);
         }
+        
         const status = matches.fixture.status.short
-        await redisClient.set(
-            `match:${id}`, JSON.stringify(matches), 'EX', getTTL('fixture', status)
-        )
+        
+        try {
+            await redisClient.set(
+                `match:${id}`, JSON.stringify(matches), 'EX', getTTL('fixture', status)
+            )
+        } catch (redisError) {
+            console.log("Could not cache to Redis:", redisError.message);
+        }
+        
         res.status(200).json(matches)
     } catch (error) {
-        res.status(500).json(error)
+        console.error("Error in getMatchById:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message })
     }
 }
 
@@ -66,8 +88,14 @@ exports.getMatchEvents = async (req, res) => {
     const key = `match:${id}:events`
 
     try {
-         let fixtureData = null
-        const cachedFixture = await redisClient.get(`match:${id}`)
+        let fixtureData = null
+        let cachedFixture = null;
+        
+        try {
+            cachedFixture = await redisClient.get(`match:${id}`)
+        } catch (redisError) {
+            console.log("Redis not available for getMatchEvents");
+        }
 
         if (cachedFixture) {
             fixtureData = JSON.parse(cachedFixture)
@@ -112,7 +140,8 @@ exports.getMatchEvents = async (req, res) => {
         res.json(events)
 
     } catch (err) {
-        res.status(500).json(err)
+        console.error("Error in getMatchEvents:", err);
+        res.status(500).json({ message: "Internal server error", error: err.message })
     }
 }
 
@@ -127,14 +156,25 @@ exports.getMatchStats = async (req, res) => {
             match && match.status === "FT"
                 ? match.data.stats
                 : null
-        const cachedFixture = await redisClient.get(`match:${id}`)
-
-        let status = "NS"
+        
+        let fixtureData = null
+        let cachedFixture = null;
+        
+        try {
+            cachedFixture = await redisClient.get(`match:${id}`)
+        } catch (redisError) {
+            console.log("Redis not available for getMatchStats");
+        }
 
         if (cachedFixture) {
-            const fixtureData = JSON.parse(cachedFixture)
-            status = fixtureData.fixture.status.short
+            fixtureData = JSON.parse(cachedFixture)
+        } else {
+            // Fetch fixture data from API if not cached
+            fixtureData = await footballServices.getMatchById(id)
         }
+
+        const status = fixtureData ? fixtureData.fixture.status.short : "NS"
+        
         const stats = await getOrFetch({
             key,
             dbData: dbStats,
@@ -145,7 +185,8 @@ exports.getMatchStats = async (req, res) => {
         res.json(stats)
 
     } catch (err) {
-        res.status(500).json(err)
+        console.error("Error in getMatchStats:", err);
+        res.status(500).json({ message: "Internal server error", error: err.message })
     }
 }
 
@@ -160,14 +201,24 @@ exports.getMatchLineups = async (req, res) => {
             match && match.status === "FT"
                 ? match.data.lineups
                 : null
-        const cachedFixture = await redisClient.get(`match:${id}`)
-
-        let status = "NS"
+        
+        let fixtureData = null
+        let cachedFixture = null;
+        
+        try {
+            cachedFixture = await redisClient.get(`match:${id}`)
+        } catch (redisError) {
+            console.log("Redis not available for getMatchLineups");
+        }
 
         if (cachedFixture) {
-            const fixtureData = JSON.parse(cachedFixture)
-            status = fixtureData.fixture.status.short
+            fixtureData = JSON.parse(cachedFixture)
+        } else {
+            // Fetch fixture data from API if not cached
+            fixtureData = await footballServices.getMatchById(id)
         }
+
+        const status = fixtureData ? fixtureData.fixture.status.short : "NS"
 
         const lineups = await getOrFetch({
             key,
@@ -179,6 +230,7 @@ exports.getMatchLineups = async (req, res) => {
         res.json(lineups)
 
     } catch (err) {
-        res.status(500).json(err)
+        console.error("Error in getMatchLineups:", err);
+        res.status(500).json({ message: "Internal server error", error: err.message })
     }
 }
