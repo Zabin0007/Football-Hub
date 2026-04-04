@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
     },
+    fcmToken: {
+        type: String
+    }
 }, { timestamps: true });
 
 const User =  mongoose.model("User", userSchema);

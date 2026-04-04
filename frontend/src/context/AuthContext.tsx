@@ -12,7 +12,6 @@ export const AuthProvider = ({children}:{children: React.ReactNode})=>{
      const [isLoading, setIsLoading] = useState(true) // Add loading back for hydration 
     
      useEffect(()=>{
-        // This runs only on client side after hydration
          const fetchUser = async () => {
     const token = localStorage.getItem("token")
 

@@ -2,6 +2,7 @@ const express = require('express')
 const { getLiveMatches, getTodayMatches, getMatchById, getMatchEvents, getMatchStats, getMatchLineups } = require('../Controllers/matchController')
 const { register, login, googleAuth, getProtected } = require('../Controllers/authcontroller')
 const middleware = require('../utils/middleware')
+const { saveFcmToken } = require('../Controllers/fcmController')
 const router = express.Router()
 
 router.post('/register', register)
@@ -14,4 +15,5 @@ router.get('/match/:id', getMatchById)
 router.get('/match/:id/events', getMatchEvents)
 router.get('/match/:id/stats', getMatchStats)
 router.get('/match/:id/lineups', getMatchLineups)
+router.post('/save-fcm-token',middleware,saveFcmToken)
 module.exports = router
