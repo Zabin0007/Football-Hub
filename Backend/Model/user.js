@@ -19,7 +19,12 @@ const userSchema = new mongoose.Schema({
     },
     fcmToken: {
         type: String
-    }
+    },
+    subscribedMatches: [
+        {
+            type: Number
+        }
+    ]
 }, { timestamps: true });
 
 const User =  mongoose.model("User", userSchema);

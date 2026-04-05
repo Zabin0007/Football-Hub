@@ -27,3 +27,10 @@ exports.googleAuth = async (req, res) => {
         res.status(400).json({ message: "Google Login Failed" })
     }
 }
+
+exports.getProtected = async (req, res) => {
+    res.json({
+        message:"You Are Authorized",
+        user:req.user
+    })
+}
