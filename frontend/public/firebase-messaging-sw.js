@@ -18,5 +18,32 @@ messaging.onBackgroundMessage(function (payload) {
 
   self.registration.showNotification(payload.notification.title, {
     body: payload.notification.body,
+    data: payload.data,
+    silent: false,
+    vibrate: [200, 100, 200],
+    icon: '/favicon.ico',
+    badge: '/favicon.ico'
   });
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  const matchId = event.notification.data?.matchId;
+
+  if (!matchId) return;
+
+  const url = `/match/${matchId}`;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true })
+      .then((windowClients) => {
+        for (let client of windowClients) {
+          if (client.url.includes(url)) {
+            return client.focus();
+          }
+        }
+        return clients.openWindow(url);
+      })
+  );
 });

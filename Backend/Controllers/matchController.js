@@ -19,8 +19,8 @@ exports.getLiveMatches = async (req, res) => {
 
 exports.getTodayMatches = async (req, res) => {
     try {
-        const today = new Date().toISOString().split('T')[0]; // Get today's date
-        const cacheKey = `today_matches:${today}`; // Include date in cache key
+        const today = new Date().toISOString().split('T')[0];
+        const cacheKey = `today_matches:${today}`; 
         
         const cached_data = await redisClient.get(cacheKey);
         if (cached_data) {

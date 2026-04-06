@@ -5,7 +5,8 @@ export const useTodayMatches = () => {
     return useQuery({
         queryKey: ['todayMatches'],
         queryFn: getTodayMatches,
-        staleTime: 1000 * 60 * 15,
-        refetchOnWindowFocus: false
+        staleTime: 1000 * 60 * 5, 
+        refetchInterval: 1000 * 60 * 5, 
+        refetchOnWindowFocus: true 
     })
 }

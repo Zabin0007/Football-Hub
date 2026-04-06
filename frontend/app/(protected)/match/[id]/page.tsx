@@ -21,6 +21,7 @@ import { useMatchById } from "@/src/hooks/useMatchById"
 import { useMatchEvents } from "@/src/hooks/useMatchEvents"
 import { useMatchStats } from "@/src/hooks/useMatchStats"
 import { useMatchLineups } from "@/src/hooks/useMatchLineups"
+import { useSubscriptionStatus } from "@/src/hooks/useSubscriptionStatus"
 
 export default function MatchPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -33,20 +34,26 @@ export default function MatchPage() {
   const matchId = params.id as string
 
   const queryClient = useQueryClient()
-
-  // MATCH DATA
+  const { data, isLoading: subLoading } = useSubscriptionStatus(matchId)
   const { data: matchData, isLoading } = useMatchById(matchId)
   const match = matchData ? transformMatch(matchData) : null
 
-  const handleNotifyMe = async () => {
+  const handleNotifyToggle = async () => {
     try {
       setIsNotifying(true)
-      await api.post('/subscribe', {
-        matchId: match?.id
-      })
-      setNotification("✓ You'll be notified for this match")
-    } catch (err) {
-      setNotification("Failed to subscribe")
+
+      if (!data?.isSubscribed) {
+        await api.post('/subscribe', { matchId })
+        setNotification("✓ Subscribed")
+      } else {
+        await api.post('/unsubscribe', { matchId })
+        setNotification("🔕 Unsubscribed")
+      }
+
+      queryClient.invalidateQueries(["subscription", matchId])
+
+    } catch {
+      setNotification("Error")
     } finally {
       setIsNotifying(false)
     }
@@ -176,17 +183,20 @@ export default function MatchPage() {
             Back
           </Link>
           <button
-            onClick={handleNotifyMe}
-            disabled={isNotifying}
-            className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${
-              isNotifying
+            onClick={handleNotifyToggle}
+            disabled={isNotifying || subLoading}
+            className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${isNotifying
                 ? 'bg-green-500 text-black'
                 : 'bg-gray-800  text-gray-500 hover:text-white border border-gray-700 hover:border-green-500'
-            } disabled:opacity-50`}
+              } disabled:opacity-50`}
             title="Notify me for this match"
           >
-            <span className="text-xl">{isNotifying ? '' : '🔔'}</span>
-            <span>{isNotifying ? 'Notifying' : 'Notify Me'}</span>
+            <span className="text-xl">{data?.isSubscribed ? '🔕' : '🔔'}</span>
+            <span> {isNotifying
+              ? 'Processing...'
+              : data?.isSubscribed
+                ? 'Unsubscribe'
+                : 'Notify Me'}</span>
             {isNotifying && (
               <span className="w-3 h-3 bg-red-500 rounded-full ml-1 animate-pulse"></span>
             )}
@@ -198,7 +208,7 @@ export default function MatchPage() {
 
         {/*  Tabs */}
         <div className="mt-6">
-          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} matchStatus={match?.status} />
         </div>
 
         {/*  Tab Content */}
@@ -223,7 +233,17 @@ export default function MatchPage() {
           )}
 
           {activeTab === "chat" && (
-            <MatchChat matchId={matchId} />
+            match?.status === "live" ? (
+              <MatchChat matchId={matchId} />
+            ) : (
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
+                <p className="text-gray-400 text-lg">
+                  {match?.status === "upcoming" 
+                    ? "Chat will be available when the match starts" 
+                    : "This match has finished. Chat is no longer available."}
+                </p>
+              </div>
+            )
           )}
 
         </div>

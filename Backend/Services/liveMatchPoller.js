@@ -1,4 +1,5 @@
 const { publisher } = require('../config/pubsub')
+const { redisClient } = require('../config/redis')
 const footballServices = require('../Services/footballServices')
 
 let previousMatches = {}
@@ -73,6 +74,16 @@ const detectEvents = (matches) => {
   return events
 }
 
+const invalidateTodayMatchesCache = async () => {
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    await redisClient.del(`today_matches:${today}`)
+    console.log("Invalidated today's matches cache")
+  } catch (error) {
+    console.log("Could not invalidate cache:", error.message)
+  }
+}
+
 const startPolling = () => {
   setInterval(async () => {
     try {
@@ -99,6 +110,12 @@ const startPolling = () => {
       }
 
       console.log("Publishing events:", events)
+
+      // Invalidate today's matches cache if any status changes detected
+      const hasStatusChange = events.some(e => e.type === "status")
+      if (hasStatusChange) {
+        await invalidateTodayMatchesCache()
+      }
 
       await publisher.publish(
         'MATCH_EVENTS',
