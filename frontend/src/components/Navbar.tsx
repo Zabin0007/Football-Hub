@@ -1,5 +1,5 @@
 'use client';
-
+import { LuLogOut } from "react-icons/lu";
 import { useState } from 'react';
 import { HiTrendingUp } from "react-icons/hi";
 import { useAuth } from '../context/AuthContext';
@@ -23,11 +23,12 @@ export default function Navbar() {
         </div>
       </Link>
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center">
           <button 
             onClick={logout} 
-            className="flex items-center gap-1 text-bold tracking-tight text-white hover:text-gray-300 text-md transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white hover:bg-gray-800 hover:text-red-500 transition-all duration-300 font-semibold text-md"
           >
+            <LuLogOut className="text-lg"/>
             Logout
           </button>
         </div>
@@ -48,12 +49,13 @@ export default function Navbar() {
       <div className={`md:hidden transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-48 mt-4' : 'max-h-0'}`}>
         <div className="flex flex-col gap-4 py-4 border-t border-gray-700">    
            <button 
-            className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-left"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-red-600 hover:text-red-100 transition-all duration-300 font-semibold text-md w-full justify-center"
             onClick={() => {
               setIsMenuOpen(false)
               logout()
             }}
           >
+            <LuLogOut className="text-lg"/>
             Logout
           </button>
         </div>

@@ -12,6 +12,8 @@ export const transformMatch = (item: ApiMatch): Match => {
         id: item.fixture.id,
         teamA: item.teams.home.name,
         teamB: item.teams.away.name,
+        logoA: item.teams.home.logo,
+        logoB: item.teams.away.logo,
         status,
         scoreA: item.goals.home ?? 0,
         scoreB: item.goals.away ?? 0,

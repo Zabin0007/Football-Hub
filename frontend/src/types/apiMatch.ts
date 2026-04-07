@@ -9,10 +9,12 @@ export type ApiMatch = {
         },
         teams:{
             home:{
-                name: string
+                name: string,
+                logo?: string
             },
             away:{
-                name: string
+                name: string,
+                logo?: string
             };
         },
         goals:{
