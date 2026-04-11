@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { Match } from "../types/match";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function MatchCard({ match }: {match : Match}) {
+  const [logoALoading, setLogoALoading] = useState(true);
+  const [logoBLoading, setLogoBLoading] = useState(true);
+
   return (
       <Link href={`/match/${match.id}`}>
             <div className="bg-gray-800 hover:border-green-500 hover:bg-gray-700 border border-gray-700 rounded-xl p-3 sm:p-5 transition-all duration-200 cursor-pointer">
@@ -12,7 +16,10 @@ export default function MatchCard({ match }: {match : Match}) {
 
                     {/* Team A */}
                     <div className="flex flex-col items-center gap-1 sm:gap-2 flex-1 min-w-0">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 relative">
+                            {logoALoading && (
+                                <div className="absolute inset-0 bg-gray-700 rounded-lg animate-pulse"></div>
+                            )}
                             {match.logoA ? (
                                 <Image 
                                     src={match.logoA} 
@@ -20,6 +27,7 @@ export default function MatchCard({ match }: {match : Match}) {
                                     width={40}
                                     height={40}
                                     className="object-contain"
+                                    onLoadingComplete={() => setLogoALoading(false)}
                                 />
                             ) : (
                                 <span className="text-2xl sm:text-3xl">⚽</span>
@@ -55,7 +63,10 @@ export default function MatchCard({ match }: {match : Match}) {
 
                     {/* Team B */}
                     <div className="flex flex-col items-center gap-1 sm:gap-2 flex-1 min-w-0">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 relative">
+                            {logoBLoading && (
+                                <div className="absolute inset-0 bg-gray-700 rounded-lg animate-pulse"></div>
+                            )}
                             {match.logoB ? (
                                 <Image 
                                     src={match.logoB} 
@@ -63,6 +74,7 @@ export default function MatchCard({ match }: {match : Match}) {
                                     width={40}
                                     height={40}
                                     className="object-contain"
+                                    onLoadingComplete={() => setLogoBLoading(false)}
                                 />
                             ) : (
                                 <span className="text-2xl sm:text-3xl">⚽</span>
