@@ -41,4 +41,3 @@ const getIO = ()=>{
 module.exports = initSocket
 module.exports.getIO = getIO 
 
-// in here socket is cilent and io is server
