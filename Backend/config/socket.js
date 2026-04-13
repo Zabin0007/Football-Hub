@@ -5,7 +5,7 @@ let io;
 const initSocket = (server) => {
      io = new Server(server,{
         cors:{
-            origin:'*'
+            origin: process.env.FRONTEND_URL || '*'
         }
     })
     // io.on => listen for new connection , wait for new client
