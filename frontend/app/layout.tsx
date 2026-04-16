@@ -1,12 +1,9 @@
+"use client";
+
 import "./globals.css";
 import { AuthProvider } from "@/src/context/AuthContext";
 import { QueryClient, QueryClientProvider } from "react-query";
 import GoogleProvider from "@/src/providers/GoogleProvider";
-
-export const metadata = {
-  title: "NowScore",
-  description: "Provides Live Score of Football and Cricket",
-};
 
 export default function RootLayout({
   children,
