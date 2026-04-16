@@ -10,11 +10,11 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379
       - PORT=8000
-      - connectionString=mongodb+srv://zabin:zabi@cluster0.h4bsynf.mongodb.net/NowScore?appName=Cluster0
-      - footballAPIKEY=9b403fdbf36c1b1ac9c9984ee3775c5d
-      - JWT_SECRET=zabiiii
-      - Google_ID=978901404739-in631jsrng98shmallf2kuu8f8fp23s9.apps.googleusercontent.com
-      - FRONTEND_URL=https://thesoccer.art
+      - connectionString=${MONGODB_CONNECTION_STRING}
+      - footballAPIKEY=${FOOTBALL_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - Google_ID=${GOOGLE_ID}
+      - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
       - redis
 
