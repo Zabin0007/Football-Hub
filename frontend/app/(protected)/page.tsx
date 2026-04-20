@@ -5,15 +5,25 @@ import MatchFilterTabs from "@/src/components/MatchFilterTabs";
 import HomePageSkeleton from "@/src/components/Skeltons/HomePageSkeleton";
 import { League } from "@/src/types/league";
 import { transformMatches } from "@/src/utils/transformMatches";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTodayMatches } from "@/src/hooks/useTodayMatches";
 
 export default function Home() {
 
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('homeFilter') || 'all'
+    }
+    return 'all'
+  })
   const [search, setSearch] = useState('')
 
   const { data, isLoading, error } = useTodayMatches()
+
+  // Save filter to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('homeFilter', filter)
+  }, [filter])
 
   const leagues: League[] = data ? transformMatches(data) : []
 

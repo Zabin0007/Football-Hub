@@ -21,6 +21,7 @@ import { useMatchById } from "@/src/hooks/useMatchById"
 import { useMatchEvents } from "@/src/hooks/useMatchEvents"
 import { useMatchStats } from "@/src/hooks/useMatchStats"
 import { useMatchLineups } from "@/src/hooks/useMatchLineups"
+import { useSubscribeMutation } from "@/src/hooks/useSubscribeMutation"
 import { useSubscriptionStatus } from "@/src/hooks/useSubscriptionStatus"
 
 export default function MatchPage() {
@@ -29,7 +30,6 @@ export default function MatchPage() {
   const [activeTab, setActiveTab] = useState("stats")
   const [notification, setNotification] = useState<string | null>(null)
   const [isSocketConnected, setIsSocketConnected] = useState(false)
-  const [isNotifying, setIsNotifying] = useState(false)
   const params = useParams()
   const matchId = params.id as string
 
@@ -37,25 +37,29 @@ export default function MatchPage() {
   const { data, isLoading: subLoading } = useSubscriptionStatus(matchId)
   const { data: matchData, isLoading } = useMatchById(matchId)
   const match = matchData ? transformMatch(matchData) : null
+  const { subscribeMutation, unsubscribeMutation } = useSubscribeMutation(matchId)
+
+  // Handle redirect from login with chat tab
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const tabParam = urlParams.get('tab')
+    if (tabParam === 'chat') {
+      setActiveTab('chat')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   const handleNotifyToggle = async () => {
     try {
-      setIsNotifying(true)
-
       if (!data?.isSubscribed) {
-        await api.post('/subscribe', { matchId })
+        await subscribeMutation.mutateAsync()
         setNotification("✓ Subscribed")
       } else {
-        await api.post('/unsubscribe', { matchId })
+        await unsubscribeMutation.mutateAsync()
         setNotification("🔕 Unsubscribed")
       }
-
-      queryClient.invalidateQueries(["subscription", matchId])
-
     } catch {
       setNotification("Error")
-    } finally {
-      setIsNotifying(false)
     }
   }
 
@@ -143,15 +147,24 @@ export default function MatchPage() {
     }
   }, [matchId])
 
-  //polling fallback
+  //polling - always poll to get status updates
   useEffect(() => {
-    if (isSocketConnected) return
-    console.log('Fallback Polling active');
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['match', matchId] })
-    }, 30000);
+    if (!matchId) return
+    
+    console.log('Polling active for match updates');
+    const interval = setInterval(async () => {
+      try {
+        // Directly refetch instead of just invalidating
+        const response = await api.get(`/match/${matchId}`)
+        // Update the query cache with fresh data
+        queryClient.setQueryData(['match', matchId], response.data)
+      } catch (error) {
+        console.error('Polling error:', error)
+      }
+    }, 10000); // Poll every 10 seconds
+    
     return () => clearInterval(interval)
-  }, [isSocketConnected, matchId])
+  }, [matchId])
 
   // toastify  auto-hide
   useEffect(() => {
@@ -184,20 +197,20 @@ export default function MatchPage() {
           </Link>
           <button
             onClick={handleNotifyToggle}
-            disabled={isNotifying || subLoading}
-            className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${isNotifying
+            disabled={subscribeMutation.isLoading || unsubscribeMutation.isLoading || subLoading}
+            className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${subscribeMutation.isLoading || unsubscribeMutation.isLoading
                 ? 'bg-green-500 text-black'
                 : 'bg-gray-800  text-gray-500 hover:text-white border border-gray-700 hover:border-green-500'
               } disabled:opacity-50`}
             title="Notify me for this match"
           >
             <span className="text-xl">{data?.isSubscribed ? '🔕' : '🔔'}</span>
-            <span> {isNotifying
+            <span> {subscribeMutation.isLoading || unsubscribeMutation.isLoading
               ? 'Processing...'
               : data?.isSubscribed
                 ? 'Unsubscribe'
                 : 'Notify Me'}</span>
-            {isNotifying && (
+            {(subscribeMutation.isLoading || unsubscribeMutation.isLoading) && (
               <span className="w-3 h-3 bg-red-500 rounded-full ml-1 animate-pulse"></span>
             )}
           </button>

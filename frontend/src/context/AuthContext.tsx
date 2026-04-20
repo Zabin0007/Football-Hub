@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
-    window.location.href = '/login'
   }
   return (
     <AuthContext.Provider

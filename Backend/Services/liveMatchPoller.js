@@ -84,6 +84,15 @@ const invalidateTodayMatchesCache = async () => {
   }
 }
 
+const invalidateMatchCache = async (matchId) => {
+  try {
+    await redisClient.del(`match:${matchId}`)
+    console.log(`Invalidated cache for match ${matchId}`)
+  } catch (error) {
+    console.log("Could not invalidate match cache:", error.message)
+  }
+}
+
 const startPolling = () => {
   setInterval(async () => {
     try {
@@ -111,7 +120,11 @@ const startPolling = () => {
 
       console.log("Publishing events:", events)
 
-      // Invalidate today's matches cache if any status changes detected
+      const matchIdsToInvalidate = new Set(events.map(e => e.matchId))
+      for (const matchId of matchIdsToInvalidate) {
+        await invalidateMatchCache(matchId)
+      }
+
       const hasStatusChange = events.some(e => e.type === "status")
       if (hasStatusChange) {
         await invalidateTodayMatchesCache()

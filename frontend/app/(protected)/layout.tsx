@@ -4,22 +4,16 @@ import Navbar from "@/src/components/Navbar"
 import HomePageSkeleton from "@/src/components/Skeltons/HomePageSkeleton"
 import MatchPageSkelton from "@/src/components/Skeltons/MatchPageSkelton"
 import { useAuth } from "@/src/context/AuthContext"
-import { usePathname, useRouter } from "next/navigation"
-import React, { useEffect } from "react"
+import { usePathname } from "next/navigation"
+import React from "react"
 
 export default function ProtectedLayout({
     children,
 }:{
     children: React.ReactNode
 }){
-    const { isLoggedIn, isLoading } = useAuth()
-    const router = useRouter()
+    const { isLoading } = useAuth()
     const pathName = usePathname()
-    useEffect(()=>{
-        if(!isLoading && !isLoggedIn){
-            router.push('/login')
-        }
-    },[isLoggedIn, isLoading])
 
     const getSkelton = () => {
         if(pathName==='/' || pathName===''){

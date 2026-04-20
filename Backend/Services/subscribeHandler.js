@@ -30,7 +30,7 @@ const startSubscriber = async () => {
 
       console.log("Sending update to Room:", matchId);
 
-      io.to(matchId).emit("match_update", item);
+      io.to(matchId).emit("matchUpdate", item);
 
       try {
         if (item.type === "goal") {

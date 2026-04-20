@@ -45,7 +45,7 @@ export default function MatchChat({matchId}:{matchId:any}) {
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                     Live Chat
-                    <span className="text-sm text-gray-400 ml-auto">5 messages</span>
+                    <span className="text-sm text-gray-400 ml-auto">{messages.length} {messages.length === 1 ? 'message' : 'messages'}</span>
                 </h3>
             </div>
 

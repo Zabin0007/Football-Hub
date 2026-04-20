@@ -26,3 +26,13 @@ export const getMatchLineups = async (id: string) => {
   const res = await api.get(`/match/${id}/lineups`)
   return res.data
 }
+
+export const subscribeToMatch = async (matchId: string) => {
+  const res = await api.post('/subscribe', { matchId })
+  return res.data
+}
+
+export const unsubscribeFromMatch = async (matchId: string) => {
+  const res = await api.post('/unsubscribe', { matchId })
+  return res.data
+}
