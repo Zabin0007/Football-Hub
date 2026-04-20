@@ -18,6 +18,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd Football-Hub
-            git pull
+            git pull origin master
             docker-compose down
             docker-compose up -d --build
