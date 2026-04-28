@@ -37,7 +37,8 @@ export default function ProtectedLayout({
         )
     }
 
-
+    // Allow all users (authenticated or not) to access this layout
+    // Only chat requires authentication (handled in MatchChat component)
     return (
         <>
             <Navbar/>

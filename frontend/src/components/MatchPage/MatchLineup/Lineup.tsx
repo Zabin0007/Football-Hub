@@ -2,7 +2,6 @@ import Pitch from "./Pitch"
 import Substitutes from "./Substitutes"
 
 export default function MatchLineups({ data }:any) {
-  // Temporary debug - remove after testing
   console.log('🔍 Lineups component - received data:', data)
   console.log('🔍 Lineups component - data type:', typeof data)
   console.log('🔍 Lineups component - is array:', Array.isArray(data))

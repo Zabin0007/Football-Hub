@@ -26,18 +26,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(res.data.user)
       } catch (err) {
         console.error("Failed to fetch user:", err)
-        const storedUser = localStorage.getItem("user")
-        if (storedUser) {
-          try {
-            setUser(JSON.parse(storedUser))
-          } catch {
-            localStorage.clear()
-            setUser(null)
-          }
-        } else {
-          localStorage.clear()
-          setUser(null)
-        }
+        // If token is invalid/expired, clear it
+        localStorage.removeItem("token")
+        localStorage.removeItem("user")
+        setUser(null)
       } finally {
         setIsLoading(false)
       }

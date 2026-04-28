@@ -13,7 +13,7 @@ import { transformMatch } from "@/src/utils/transformMatch"
 import { socket } from "@/src/utils/socket"
 import api from "@/src/api/axios"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { FaArrowLeftLong } from "react-icons/fa6"
 import { useQueryClient } from "react-query"
@@ -23,15 +23,18 @@ import { useMatchStats } from "@/src/hooks/useMatchStats"
 import { useMatchLineups } from "@/src/hooks/useMatchLineups"
 import { useSubscribeMutation } from "@/src/hooks/useSubscribeMutation"
 import { useSubscriptionStatus } from "@/src/hooks/useSubscriptionStatus"
+import { useAuth } from "@/src/context/AuthContext"
+import { toast } from "react-toastify"
 
 export default function MatchPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const [activeTab, setActiveTab] = useState("stats")
   const [notification, setNotification] = useState<string | null>(null)
-  const [isSocketConnected, setIsSocketConnected] = useState(false)
   const params = useParams()
   const matchId = params.id as string
+  const router = useRouter()
+  const { isLoggedIn } = useAuth()
 
   const queryClient = useQueryClient()
   const { data, isLoading: subLoading } = useSubscriptionStatus(matchId)
@@ -50,6 +53,22 @@ export default function MatchPage() {
   }, [])
 
   const handleNotifyToggle = async () => {
+    if (!isLoggedIn) {
+      toast.info("Login required to receive notifications. Click to go to login page.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        onClick: () => {
+          sessionStorage.setItem('redirectAfterLogin', window.location.pathname)
+          router.push('/login')
+        }
+      })
+      return
+    }
+
     try {
       if (!data?.isSubscribed) {
         await subscribeMutation.mutateAsync()
@@ -89,13 +108,11 @@ export default function MatchPage() {
     // reconnect support
     socket.on("connect", () => {
       console.log('Socket connected');
-      setIsSocketConnected(true)
       socket.emit("joinMatch", matchId)
     })
 
     socket.on("disconnect", () => {
       console.log("Socket disconnected")
-      setIsSocketConnected(false)
     })
 
     const handleMatchUpdate = (event: any) => {

@@ -1,7 +1,16 @@
 import { normalizeType, eventConfig } from "@/src/utils/eventConfig"
 
 export default function MatchEvents({ data }: any) {
-  if (!data || !Array.isArray(data)) return null
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400 text-lg mb-2">Events not available</p>
+          <p className="text-gray-500 text-sm">Match events will appear as they happen</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
