@@ -35,10 +35,11 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd Football-Hub
-
-            docker pull zabin0007/football-hub-backend
-            docker pull zabin0007/football-hub-frontend
-
-            docker-compose down
-            docker-compose up -d
+              pwd
+              ls
+              cd /home/ubuntu/Football-Hub || exit 1
+              ls
+              docker pull zabin0007/football-hub-backend
+              docker pull zabin0007/football-hub-frontend
+              docker-compose down
+              docker-compose up -d
