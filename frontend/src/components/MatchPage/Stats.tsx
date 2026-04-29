@@ -1,4 +1,47 @@
+import { useEffect } from 'react'
+
 export default function Stats({ data }: any) {
+  useEffect(() => {
+    // Inject styles into the document head
+    const styleId = 'stats-animations'
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style')
+      style.id = styleId
+      style.textContent = `
+        @keyframes slideFromLeft {
+          from {
+            width: 0;
+            opacity: 0;
+          }
+          to {
+            width: var(--progress-width);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideFromRight {
+          from {
+            width: 0;
+            opacity: 0;
+          }
+          to {
+            width: var(--progress-width);
+            opacity: 1;
+          }
+        }
+
+        .progress-bar-left {
+          animation: slideFromLeft 2s ease-in-out forwards;
+        }
+
+        .progress-bar-right {
+          animation: slideFromRight 2s ease-in-out forwards;
+        }
+      `
+      document.head.appendChild(style)
+    }
+  }, [])
+
   if (!data || !Array.isArray(data) || data.length < 2) {
     return (
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex items-center justify-center">
@@ -105,12 +148,12 @@ export default function Stats({ data }: any) {
 
             <div className="flex h-2 bg-gray-800 rounded overflow-hidden">
               <div
-                className="bg-green-500 transition-all duration-300"
-                style={{ width: `${progressA}%` }}
+                className="bg-green-500 progress-bar-left"
+                style={{ '--progress-width': `${progressA}%` } as React.CSSProperties}
               />
               <div
-                className="bg-blue-500 transition-all duration-300"
-                style={{ width: `${100 - progressA}%` }}
+                className="bg-blue-500 progress-bar-right"
+                style={{ '--progress-width': `${100 - progressA}%` } as React.CSSProperties}
               />
             </div>
           </div>

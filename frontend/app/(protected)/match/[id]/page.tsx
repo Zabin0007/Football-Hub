@@ -267,7 +267,7 @@ export default function MatchPage() {
               <MatchChat matchId={matchId} />
             ) : (
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
-                <p className="text-gray-400 text-lg">
+                <p className="text-gray-400 text-md">
                   {match?.status === "upcoming" 
                     ? "Chat will be available when the match starts" 
                     : "This match has finished. Chat is no longer available."}
