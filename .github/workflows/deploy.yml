@@ -49,6 +49,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd Football-Hub
+            git pull origin master
             docker pull zabin0007/football-hub-backend
             docker pull zabin0007/football-hub-frontend
             docker-compose down
