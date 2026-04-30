@@ -9,8 +9,6 @@ services:
       - "8000:8000"
     volumes:
       - ./Backend/config/serviceAccountKey.json:/app/config/serviceAccountKey.json
-    env_file:
-      - Backend/.env
     depends_on:
       - redis
 
