@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const DB = require('./config/config')
+const connectDB = require('./config/config')
 const router = require('./Router/router')
 const http = require('http')
 const initSocket = require('./config/socket')
@@ -15,6 +15,7 @@ app.use(express.json())
 app.use(('/api'), router)
 
 const startServer = async () => {
+    await connectDB()
     await connectRedis()
     await testRedis()
     await connectPubSub()
