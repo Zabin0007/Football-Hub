@@ -7,6 +7,8 @@ services:
     container_name: backend
     ports:
       - "8000:8000"
+    volumes:
+      - ./Backend/config/serviceAccountKey.json:/app/config/serviceAccountKey.json
     env_file:
       - .env
     depends_on:
