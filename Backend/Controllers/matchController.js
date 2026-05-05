@@ -35,11 +35,12 @@ exports.getTodayMatches = async (req, res) => {
         await redisClient.set(
             cacheKey, JSON.stringify(matches), 'EX', ttl
         );
-        console.log('From API for date:', today);
+        console.log('From API for date:', today, 'Matches count:', matches?.length || 0);
         res.status(200).json(matches)
 
     } catch (error) {
-        res.status(500).json(error)
+        console.error("Error in getTodayMatches:", error.message, error.response?.status, error.response?.data);
+        res.status(500).json({ message: "Error fetching matches", error: error.message })
     }
 }
 
